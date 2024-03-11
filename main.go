@@ -66,7 +66,7 @@ func createPod(namespace, podName, mirrorType, podInterface, destinationIP, vxla
 			NodeName:    "k8s-w1.5g.dn.th-koeln.de",
 			Volumes: []corev1.Volume{
 				{
-					Name: "hostproc",
+					Name: "proc",
 					VolumeSource: corev1.VolumeSource{
 						HostPath: &corev1.HostPathVolumeSource{
 							Path: "/proc",
@@ -86,7 +86,7 @@ func createPod(namespace, podName, mirrorType, podInterface, destinationIP, vxla
 			Containers: []corev1.Container{
 				{
 					Name:  "network-mirror",
-					Image: "quay.io/s1061123/kokotap:latest", // Specify the image you want to use
+					Image: "netand593/kokotap:2.0-beta", // Specify the image you want to use
 					/*Env: []corev1.EnvVar{
 						{Name: "MIRROR_TYPE", Value: mirrorType},
 						{Name: "MIRROR_INTERFACE", Value: mirrorInterface},
@@ -100,8 +100,8 @@ func createPod(namespace, podName, mirrorType, podInterface, destinationIP, vxla
 					},
 					VolumeMounts: []corev1.VolumeMount{
 						{
-							Name:      "hostproc",
-							MountPath: "/hostproc",
+							Name:      "proc",
+							MountPath: "/host/proc",
 						},
 						{
 							Name:      "var-crio",
@@ -115,7 +115,7 @@ func createPod(namespace, podName, mirrorType, podInterface, destinationIP, vxla
 						"--containerid=" + containerID,
 						"--mirrortype=" + mirrorType,
 						"--mirrorif=" + podInterface,
-						"--ifname=mirror",
+						"--ifname=mirror-1",
 						"--vxlan-egressip=192.168.1.108",
 						"--vxlan-ip=" + destinationIP,
 						"--vxlan-id=" + vxlanID,
@@ -141,12 +141,12 @@ func createPod(namespace, podName, mirrorType, podInterface, destinationIP, vxla
 // Example usage
 func main() {
 	ns := "default"
-	pod := "ueransim-gnb-ues-6c7d5c7bfb-2nd9t"
+	pod := "ueransim-gnb-ues-6c7d5c7bfb-rb4q6"
 	mType := "both"
-	PodInt := "eth0"
+	PodInt := "uesimtun0"
 	destIP := "192.168.1.109"
-	vID := "1100"
-	contID := "cri-o://3ba9777f0b218d6364a33f79b28a91e3a8e48aca7d55c73c2109e49e7e993285"
+	vID := "1101"
+	contID := "cri-o://6636da5dc808a025dcd6840f43ff03994d0b3362d55c03934b49a3824ee1c6b5"
 	err := createPod(ns, pod, mType, PodInt, destIP, vID, contID)
 	if err != nil {
 		fmt.Printf("Error creating pod: %s\n", err)
